@@ -2,6 +2,7 @@ package org.kenramandha.crypto_apps.coins.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import cryptoapps.composeapp.generated.resources.Res
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.onStart
@@ -9,6 +10,10 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import org.kenramandha.crypto_apps.coins.domain.usecases.GetCoinsListUseCase
 import org.kenramandha.crypto_apps.core.domain.Result
+import org.kenramandha.crypto_apps.core.util.formatCoinUnit
+import org.kenramandha.crypto_apps.core.util.formatFiat
+import org.kenramandha.crypto_apps.core.util.formatPercentage
+import org.kenramandha.crypto_apps.core.util.toUiText
 
 class CoinsListViewModel(
     private val getCoinsListUseCase: GetCoinsListUseCase,
@@ -33,8 +38,8 @@ class CoinsListViewModel(
                                 name = coinItem.coin.name,
                                 symbol = coinItem.coin.symbol,
                                 iconUrl = coinItem.coin.iconUrl,
-                                formattedChange = coinItem.change.toString(), //TODO: Format change
-                                formattedPrice = coinItem.price.toString(), // TODO: Format price
+                                formattedPrice = formatFiat(coinItem.price),
+                                formattedChange = formatPercentage(coinItem.change),
                                 isPositive = coinItem.change >= 0
                             )
                         }
@@ -46,7 +51,7 @@ class CoinsListViewModel(
                 _state.update {
                     it.copy(
                         coins = emptyList(),
-                        error = null //TODO : Handle error
+                        error = coinsResponse.error.toUiText()
                     )
                 }
             }
