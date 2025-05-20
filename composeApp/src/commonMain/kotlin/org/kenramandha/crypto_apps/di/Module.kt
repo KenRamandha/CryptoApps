@@ -5,6 +5,7 @@ import org.kenramandha.crypto_apps.coins.data.remote.impl.KtorCoinsRemoteDataSou
 import org.kenramandha.crypto_apps.coins.domain.api.CoinRemoteDataSource
 import org.kenramandha.crypto_apps.coins.domain.usecases.GetCoinDetailsUseCase
 import org.kenramandha.crypto_apps.coins.domain.usecases.GetCoinsListUseCase
+import org.kenramandha.crypto_apps.coins.domain.usecases.GetCoinPriceHistoryUseCase
 import org.kenramandha.crypto_apps.coins.presentation.CoinsListViewModel
 import org.kenramandha.crypto_apps.core.network.HttpClientFactory
 import org.koin.core.context.startKoin
@@ -32,9 +33,9 @@ val sharedModule = module {
     single<HttpClient> { HttpClientFactory.create(get())}
 
     //coins list
-    viewModel { CoinsListViewModel(get())}
+    viewModel { CoinsListViewModel(get(), get())}
     singleOf(::GetCoinsListUseCase)
     singleOf(::KtorCoinsRemoteDataSource).bind<CoinRemoteDataSource>()
     singleOf(::GetCoinDetailsUseCase)
-
+    singleOf(::GetCoinPriceHistoryUseCase)
 }
