@@ -1,5 +1,6 @@
 package org.kenramandha.crypto_apps.di
 
+import androidx.room.RoomDatabase
 import io.ktor.client.HttpClient
 import org.kenramandha.crypto_apps.coins.data.remote.impl.KtorCoinsRemoteDataSource
 import org.kenramandha.crypto_apps.coins.domain.api.CoinRemoteDataSource
@@ -7,6 +8,8 @@ import org.kenramandha.crypto_apps.coins.domain.usecases.GetCoinDetailsUseCase
 import org.kenramandha.crypto_apps.coins.domain.usecases.GetCoinsListUseCase
 import org.kenramandha.crypto_apps.coins.domain.usecases.GetCoinPriceHistoryUseCase
 import org.kenramandha.crypto_apps.coins.presentation.CoinsListViewModel
+import org.kenramandha.crypto_apps.core.database.portfolio.PortfolioDatabase
+import org.kenramandha.crypto_apps.core.database.portfolio.getPortfolioDatabase
 import org.kenramandha.crypto_apps.core.network.HttpClientFactory
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
@@ -31,6 +34,11 @@ expect val platformModule: Module
 val sharedModule = module {
     //core
     single<HttpClient> { HttpClientFactory.create(get())}
+
+    //portfolio
+    single {
+        getPortfolioDatabase(get<RoomDatabase.Builder<PortfolioDatabase>>())
+    }
 
     //coins list
     viewModel { CoinsListViewModel(get(), get())}

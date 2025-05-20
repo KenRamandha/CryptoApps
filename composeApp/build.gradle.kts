@@ -32,6 +32,7 @@ kotlin {
     }
 
     sourceSets {
+
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
@@ -39,11 +40,7 @@ kotlin {
             implementation(libs.koin.android)
             implementation(libs.koin.androidx.compose)
             implementation(libs.biometric)
-
-            implementation(libs.room.runtime)
-            implementation(libs.sqlite.bundled)
         }
-
         commonMain.dependencies {
             implementation(compose.runtime)
             implementation(compose.foundation)
@@ -57,6 +54,8 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtime.compose)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.bundles.ktor)
+            implementation(libs.room.runtime)
+            implementation(libs.sqlite.bundled)
 
             api(libs.koin.core)
             implementation(libs.koin.compose)
@@ -69,7 +68,6 @@ kotlin {
             implementation(libs.coil.svg)
             implementation(libs.coil.network.ktor)
         }
-
         iosMain.dependencies {
             implementation(libs.ktor.ios)
         }
@@ -87,19 +85,16 @@ android {
         versionCode = 1
         versionName = "1.0"
     }
-
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
-
     buildTypes {
         getByName("release") {
             isMinifyEnabled = false
         }
     }
-
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
@@ -110,10 +105,6 @@ android {
 
 room {
     schemaDirectory("$projectDir/schemas")
-}
-
-ksp {
-    arg("room.schemaLocation", "$projectDir/schemas")
 }
 
 dependencies {
