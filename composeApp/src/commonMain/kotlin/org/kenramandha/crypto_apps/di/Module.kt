@@ -16,6 +16,8 @@ import org.kenramandha.crypto_apps.portfolio.domain.PortfolioRepository
 import org.kenramandha.crypto_apps.portfolio.presentation.PortfolioViewModel
 import org.kenramandha.crypto_apps.trade.domain.BuyCoinUseCase
 import org.kenramandha.crypto_apps.trade.domain.SellCoinUseCase
+import org.kenramandha.crypto_apps.trade.presentation.buy.BuyViewModel
+import org.kenramandha.crypto_apps.trade.presentation.sell.SellViewModel
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.singleOf
@@ -61,4 +63,6 @@ val sharedModule = module {
     // trade
     singleOf(::BuyCoinUseCase)
     singleOf(::SellCoinUseCase)
+    viewModel { BuyViewModel(get(), get(), get()) }
+    viewModel { SellViewModel(get(), get(), get()) }
 }
