@@ -29,7 +29,7 @@ class PortfolioRepositoryImpl(
     override suspend fun initializeBalance() {
         val currentBalance = userBalanceDao.getCashBalance()
         if (currentBalance == null) {
-            userBalanceDao.insertCashBalance(
+            userBalanceDao.insertBalance(
                 UserBalanceEntity(
                     cashBalance = 10000.0
                 )

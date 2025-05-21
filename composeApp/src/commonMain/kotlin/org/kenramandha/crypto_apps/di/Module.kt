@@ -13,6 +13,7 @@ import org.kenramandha.crypto_apps.core.database.portfolio.getPortfolioDatabase
 import org.kenramandha.crypto_apps.core.network.HttpClientFactory
 import org.kenramandha.crypto_apps.portfolio.data.PortfolioRepositoryImpl
 import org.kenramandha.crypto_apps.portfolio.domain.PortfolioRepository
+import org.kenramandha.crypto_apps.portfolio.presentation.PortfolioViewModel
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.singleOf
@@ -43,6 +44,10 @@ val sharedModule = module {
     }
 
     singleOf(::PortfolioRepositoryImpl).bind<PortfolioRepository>()
+    viewModel { PortfolioViewModel(get()) }
+    single { get<PortfolioDatabase>().portfolioDao() }
+    single { get<PortfolioDatabase>().userBalanceDao() }
+    viewModel { PortfolioViewModel(get()) }
 
     //coins list
     viewModel { CoinsListViewModel(get(), get())}

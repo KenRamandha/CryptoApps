@@ -7,12 +7,12 @@ import androidx.room.Upsert
 @Dao
 interface UserBalanceDao {
 
-    @Query("SELECT * FROM cashBalance WHERE id = 1")
+    @Query("SELECT cashBalance FROM UserBalanceEntity WHERE id = 1")
     suspend fun getCashBalance(): Double?
 
     @Upsert
-    suspend fun insertCashBalance(cashBalanceEntity: UserBalanceEntity)
+    suspend fun insertBalance(userBalanceEntity: UserBalanceEntity)
 
-    @Query("UPDATE UserBalanceEntity SET cashBalance= :newBalance WHERE id = 1")
+    @Query("UPDATE UserBalanceEntity SET cashBalance = :newBalance WHERE id = 1")
     suspend fun updateCashBalance(newBalance: Double)
 }
