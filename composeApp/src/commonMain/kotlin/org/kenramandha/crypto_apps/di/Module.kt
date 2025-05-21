@@ -11,6 +11,8 @@ import org.kenramandha.crypto_apps.coins.presentation.CoinsListViewModel
 import org.kenramandha.crypto_apps.core.database.portfolio.PortfolioDatabase
 import org.kenramandha.crypto_apps.core.database.portfolio.getPortfolioDatabase
 import org.kenramandha.crypto_apps.core.network.HttpClientFactory
+import org.kenramandha.crypto_apps.portfolio.data.PortfolioRepositoryImpl
+import org.kenramandha.crypto_apps.portfolio.domain.PortfolioRepository
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.singleOf
@@ -39,6 +41,8 @@ val sharedModule = module {
     single {
         getPortfolioDatabase(get<RoomDatabase.Builder<PortfolioDatabase>>())
     }
+
+    singleOf(::PortfolioRepositoryImpl).bind<PortfolioRepository>()
 
     //coins list
     viewModel { CoinsListViewModel(get(), get())}
