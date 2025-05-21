@@ -2,11 +2,13 @@ package org.kenramandha.crypto_apps.trade.presentation.buy
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -24,9 +26,9 @@ class BuyViewModel(
     private val getCoinDetailsUseCase: GetCoinDetailsUseCase,
     private val portfolioRepository: PortfolioRepository,
     private val buyCoinUseCase: BuyCoinUseCase,
+    private val coinId: String,
 ) : ViewModel() {
 
-    private val tempCoinId = "1" // todo: will be removed later and replaced by parameter
     private val _amount = MutableStateFlow("")
     private val _state = MutableStateFlow(TradeState())
     val state = combine(
@@ -45,8 +47,11 @@ class BuyViewModel(
         initialValue = TradeState(isLoading = true)
     )
 
+    private val _events = Channel<BuyEvents>(capacity = Channel.BUFFERED)
+    val events = _events.receiveAsFlow()
+
     private suspend fun getCoinDetails(balance: Double) {
-        when (val coinResponse = getCoinDetailsUseCase.execute(tempCoinId)) {
+        when (val coinResponse = getCoinDetailsUseCase.execute(coinId)) {
             is Result.Success -> {
                 _state.update {
                     it.copy(
@@ -88,7 +93,7 @@ class BuyViewModel(
 
             when(buyCoinResponse) {
                 is Result.Success -> {
-                    // TODO: Navigate to next screen with event
+                    _events.send(BuyEvents.BuySuccess)
                 }
                 is Result.Error -> {
                     _state.update {
@@ -100,6 +105,9 @@ class BuyViewModel(
                 }
             }
         }
-
     }
+}
+
+sealed interface BuyEvents {
+    data object BuySuccess : BuyEvents
 }

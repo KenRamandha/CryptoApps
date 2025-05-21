@@ -2,10 +2,12 @@ package org.kenramandha.crypto_apps.trade.presentation.sell
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -23,9 +25,8 @@ class SellViewModel(
     private val getCoinDetailsUseCase: GetCoinDetailsUseCase,
     private val portfolioRepository: PortfolioRepository,
     private val sellCoinUseCase: SellCoinUseCase,
+    private val coinId: String,
 ): ViewModel() {
-
-    private val tempCoinId = "1" // TODO: will be removed
 
     private val _amount = MutableStateFlow("")
     private val _state = MutableStateFlow(TradeState())
@@ -37,7 +38,7 @@ class SellViewModel(
             amount = amount
         )
     }.onStart{
-        when(val portfolioCoinResponse = portfolioRepository.getPortfolioCoin(tempCoinId)) {
+        when(val portfolioCoinResponse = portfolioRepository.getPortfolioCoin(coinId)) {
             is Result.Success -> {
                 portfolioCoinResponse.data?.ownedAmountInUnit?.let {
                     getCoinDetails(it)
@@ -58,12 +59,15 @@ class SellViewModel(
         initialValue = TradeState(isLoading = true)
     )
 
+    private val _events = Channel<SellEvents>(capacity = Channel.BUFFERED)
+    val events = _events.receiveAsFlow()
+
     fun onAmountChanged(amount: String) {
         _amount.value = amount
     }
 
     private suspend fun getCoinDetails(ownedAmountInUnit: Double) {
-        when(val coinResponse = getCoinDetailsUseCase.execute(tempCoinId)) {
+        when(val coinResponse = getCoinDetailsUseCase.execute(coinId)) {
             is Result.Success -> {
                 val availableAmountInFiat = ownedAmountInUnit * coinResponse.data.price
                 _state.update {
@@ -100,7 +104,7 @@ class SellViewModel(
             )
             when (sellCoinResponse) {
                 is Result.Success -> {
-                    // TODO: add event and navigation
+                    _events.send(SellEvents.SellSuccess)
                 }
 
                 is Result.Error -> {
@@ -115,4 +119,8 @@ class SellViewModel(
             }
         }
     }
+}
+
+sealed interface SellEvents {
+    data object SellSuccess : SellEvents
 }
